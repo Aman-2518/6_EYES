@@ -1,0 +1,65 @@
+====================================================================================================
+NETWORK SECURITY SCANNER REPORT
+====================================================================================================
+
+Target IP        : 127.0.0.1
+IP Version       : IPv4
+Scan Type        : Common Ports Scan
+Generated On     : 10-07-2026
+Generated Time   : 05:41:52
+
+====================================================================================================
+SCAN RESULTS
+====================================================================================================
+
+STATE     PORT    DEFAULT           SERVICE           RISK      BANNER
+----------------------------------------------------------------------------------------------------
+CLOSED    20      FTP-DATA          -              -         Not Available
+CLOSED    21      FTP               -              -         Not Available
+CLOSED    22      SSH               -              -         Not Available
+CLOSED    23      TELNET            -              -         Not Available
+CLOSED    25      SMTP              -              -         Not Available
+CLOSED    53      DNS               -              -         Not Available
+CLOSED    80      HTTP              -              -         Not Available
+CLOSED    110     POP3              -              -         Not Available
+OPEN      135     RPC               RPC            MEDIUM    Not Available
+CLOSED    139     NETBIOS           -              -         Not Available
+CLOSED    143     IMAP              -              -         Not Available
+CLOSED    443     HTTPS             -              -         Not Available
+OPEN      445     SMB               SMB            HIGH      Not Available
+CLOSED    3306    MYSQL             -              -         Not Available
+CLOSED    3389    RDP               -              -         Not Available
+
+====================================================================================================
+RISK ANALYSIS
+====================================================================================================
+
+Port           : 135
+Service        : RPC
+Risk           : MEDIUM
+Reason         : RPC services may expose system management interfaces.
+Recommendation : Restrict access using firewall rules.
+----------------------------------------------------------------------------------------------------
+Port           : 445
+Service        : SMB
+Risk           : HIGH
+Reason         : SMB is frequently targeted by attackers if improperly configured.
+Recommendation : Disable SMBv1, apply security updates, and restrict network access.
+----------------------------------------------------------------------------------------------------
+
+====================================================================================================
+SCAN STATISTICS
+====================================================================================================
+
+Total Ports Scanned : 15
+Open Ports          : 2
+Closed Ports        : 13
+High Risks          : 1
+Medium Risks        : 1
+Low Risks           : 0
+
+====================================================================================================
+OVERALL SECURITY SCORE
+====================================================================================================
+
+Security Score : 74/100
