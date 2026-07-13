@@ -3,7 +3,7 @@ import ssl
 import config
 
 
-def detect_service(ip, port, version):
+def detect_service(ip, port, version,hostname = None):
   
     family = socket.AF_INET if version == 4 else socket.AF_INET6
 
@@ -16,7 +16,7 @@ def detect_service(ip, port, version):
 
         if port in config.HTTPS_PORTS:
             context = ssl.create_default_context()
-            sock = context.wrap_socket(sock, server_hostname=ip)
+            sock = context.wrap_socket(sock, server_hostname = hostname if hostname else ip)
 
 
         address = socket.getaddrinfo(
@@ -29,7 +29,8 @@ def detect_service(ip, port, version):
         sock.connect(address)
 
         if port in config.WEB_PORTS:
-            request = config.REQUEST.format(host=ip)
+            host = hostname if hostname else ip
+            request = config.REQUEST.format(host= host)
             sock.sendall(request.encode())
 
         banner = sock.recv(config.BUFFER_SIZE)
@@ -37,7 +38,9 @@ def detect_service(ip, port, version):
         if not banner:
             return None
 
-        return banner.decode(errors="ignore").strip()
+        banner = banner.decode(errors="ignore").strip()
+        banner = banner.splitlines()[0]
+        return banner
 
     except socket.timeout:
         return None
@@ -73,9 +76,9 @@ def identify_service(banner,port):
     return default_service
 
 
-def detect_and_identify(ip, port, version):
+def detect_and_identify(ip, port, version,hostname= None):
    
-    banner = detect_service(ip, port, version)
+    banner = detect_service(ip, port, version ,hostname)
     return {
     "port": port,
     "state": "OPEN",

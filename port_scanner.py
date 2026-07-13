@@ -29,14 +29,14 @@ def scan_ports(ip,port,version):
         sock.close()
 
 
-def single_port(ip, port, version):
+def single_port(ip, port, version,hostname=None):
 
     results = []
 
     if scan_ports(ip, port, version):
 
         results.append(
-            service_detector.detect_and_identify(ip, port, version)
+            service_detector.detect_and_identify(ip, port, version,hostname)
         )
 
     else:
@@ -52,7 +52,7 @@ def single_port(ip, port, version):
     return results
 
 
-def common_port(ip, ports, version):
+def common_port(ip, ports, version,hostname=None):
 
     results = []
 
@@ -61,7 +61,7 @@ def common_port(ip, ports, version):
         if scan_ports(ip, port, version):
 
             results.append(
-                service_detector.detect_and_identify(ip, port, version)
+                service_detector.detect_and_identify(ip, port, version, hostname)
             )
 
         else:
@@ -77,7 +77,7 @@ def common_port(ip, ports, version):
     return results
 
 
-def custom_range(ip, start_port, end_port, version):
+def custom_range(ip, start_port, end_port, version, hostname=None):
 
     results = []
 
@@ -90,7 +90,7 @@ def custom_range(ip, start_port, end_port, version):
         if scan_ports(ip, port, version):
 
             results.append(
-                service_detector.detect_and_identify(ip, port, version)
+                service_detector.detect_and_identify(ip, port, version, hostname)
             )
 
         else:
