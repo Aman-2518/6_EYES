@@ -28,7 +28,10 @@ def resolve_domain(url):
     address = []
     dns = validate_url(url)
     if not dns['valid']:
-        return None
+        return {
+            "valid": False,
+            "error": dns.get("error", "Invalid URL")
+        }
     try:
         result = socket.getaddrinfo(dns['hostname'],None)
     except socket.gaierror :

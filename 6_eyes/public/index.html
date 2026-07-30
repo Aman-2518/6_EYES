@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6_EYES // Network Security Scanner</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo">
+                    <i data-lucide="eye" class="logo-icon"></i>
+                    <span>6_EYES</span>
+                </div>
+                <span class="subtitle">Security Intelligence</span>
+            </div>
+            
+            <nav class="nav-menu">
+                <button class="nav-btn active" data-tab="scanner">
+                    <i data-lucide="shield-alert"></i>
+                    <span>Scanner Dashboard</span>
+                </button>
+                <button class="nav-btn" data-tab="reports">
+                    <i data-lucide="folder-git-2"></i>
+                    <span>Scan Reports</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="dot online"></span>
+                    <span>Scanner Core Ready</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="header-title">
+                    <h1 id="page-title">Scanner Dashboard</h1>
+                    <p class="text-muted">Analyze hosts, identify open ports, and gauge security vulnerabilities.</p>
+                </div>
+                <div class="system-time">
+                    <i data-lucide="clock"></i>
+                    <span id="time-display">--:--:--</span>
+                </div>
+            </header>
+
+            <!-- TAB: SCANNER -->
+            <section id="tab-scanner" class="tab-content active">
+                <div class="dashboard-grid">
+                    <!-- Column 1: Config Panel -->
+                    <div class="card scan-config-card">
+                        <div class="card-header">
+                            <i data-lucide="sliders" class="header-icon"></i>
+                            <h2>Scan Configuration</h2>
+                        </div>
+                        <form id="scan-form" class="scan-form">
+                            <div class="form-group">
+                                <label for="target">Target Host (IP or Domain)</label>
+                                <div class="input-with-icon">
+                                    <i data-lucide="globe"></i>
+                                    <input type="text" id="target" placeholder="e.g. 127.0.0.1 or google.com" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="scan_type">Scan Strategy</label>
+                                <select id="scan_type" class="custom-select">
+                                    <option value="1">Common Ports (config list)</option>
+                                    <option value="2">Single Port</option>
+                                    <option value="3">Custom Range</option>
+                                </select>
+                            </div>
+
+                            <!-- Single Port Config -->
+                            <div class="form-group conditional-input" id="single-port-group">
+                                <label for="port">Port Number</label>
+                                <div class="input-with-icon">
+                                    <i data-lucide="hash"></i>
+                                    <input type="number" id="port" min="1" max="65535" value="80">
+                                </div>
+                            </div>
+
+                            <!-- Custom Range Config -->
+                            <div class="form-group-row conditional-input" id="range-port-group">
+                                <div class="form-group">
+                                    <label for="start_port">Start Port</label>
+                                    <input type="number" id="start_port" min="1" max="65535" value="1">
+                                </div>
+                                <div class="form-group">
+                                    <label for="end_port">End Port</label>
+                                    <input type="number" id="end_port" min="1" max="65535" value="1024">
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-primary" id="btn-start-scan">
+                                <i data-lucide="activity" class="btn-icon"></i>
+                                <span>Initialize Scan</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Column 2: Live Progress & Summary Stats -->
+                    <div class="card status-card">
+                        <div class="card-header">
+                            <i data-lucide="activity" class="header-icon"></i>
+                            <h2>Scan Status & Health</h2>
+                        </div>
+                        <div class="status-placeholder" id="status-idle-placeholder">
+                            <div class="radar-animation">
+                                <div class="ping"></div>
+                                <div class="ping-ring"></div>
+                            </div>
+                            <p>Awaiting scan instructions...</p>
+                            <span class="text-muted">Enter target host and configure range to begin network audit.</span>
+                        </div>
+
+                        <div class="status-running hidden" id="status-running-loader">
+                            <div class="spinner"></div>
+                            <h3>Performing Port Audit...</h3>
+                            <p class="target-scanning-label">Scanning target host addresses</p>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill"></div>
+                            </div>
+                            <span class="text-muted font-mono">Connecting sockets concurrently...</span>
+                        </div>
+
+                        <!-- Results summary when completed -->
+                        <div class="status-summary hidden" id="status-summary-dashboard">
+                            <div class="score-container">
+                                <div class="score-radial">
+                                    <svg viewBox="0 0 100 100" class="gauge-svg">
+                                        <circle cx="50" cy="50" r="40" class="gauge-bg"></circle>
+                                        <circle cx="50" cy="50" r="40" class="gauge-fill" id="score-gauge"></circle>
+                                    </svg>
+                                    <div class="score-number-wrapper">
+                                        <span class="score-val" id="score-value">100</span>
+                                        <span class="score-max">/100</span>
+                                    </div>
+                                </div>
+                                <div class="score-label-col">
+                                    <span class="score-badge" id="security-rating">SECURE</span>
+                                    <span class="text-muted">Overall Security Score</span>
+                                </div>
+                            </div>
+
+                            <div class="metrics-grid">
+                                <div class="metric-card bg-open">
+                                    <span class="metric-num" id="stat-open">0</span>
+                                    <span class="metric-label">Open Ports</span>
+                                </div>
+                                <div class="metric-card bg-closed">
+                                    <span class="metric-num" id="stat-closed">0</span>
+                                    <span class="metric-label">Closed Ports</span>
+                                </div>
+                                <div class="metric-card bg-high">
+                                    <span class="metric-num" id="stat-high">0</span>
+                                    <span class="metric-label">High Risks</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Targets list (DNS resolution feedback) -->
+                <div class="card targets-feedback-card hidden" id="targets-feedback-panel">
+                    <div class="card-header">
+                        <i data-lucide="network" class="header-icon"></i>
+                        <h2>Resolved Target Hosts</h2>
+                    </div>
+                    <div class="target-chips-container" id="target-chips">
+                        <!-- Chips go here -->
+                    </div>
+                </div>
+
+                <!-- Scan Results Panel -->
+                <div class="card results-card hidden" id="results-panel">
+                    <div class="card-header results-header-actions">
+                        <div class="header-left">
+                            <i data-lucide="list-collapse" class="header-icon"></i>
+                            <h2>Scan Results & Details</h2>
+                        </div>
+                        <div class="header-right">
+                            <a id="btn-download-report" href="#" target="_blank" class="btn-secondary">
+                                <i data-lucide="download"></i>
+                                <span>Export Report</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>State</th>
+                                    <th>Port</th>
+                                    <th>Service</th>
+                                    <th>Risk</th>
+                                    <th>IP Address</th>
+                                    <th>Banner</th>
+                                </tr>
+                            </thead>
+                            <tbody id="results-tbody">
+                                <!-- Results rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Risk Explanations Panel -->
+                <div class="card risks-explanation-card hidden" id="risks-panel">
+                    <div class="card-header">
+                        <i data-lucide="alert-triangle" class="header-icon"></i>
+                        <h2>Risk Mitigation & Action Items</h2>
+                    </div>
+                    <div class="risks-grid" id="risks-container">
+                        <!-- Risk item cards -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB: REPORTS -->
+            <section id="tab-reports" class="tab-content">
+                <div class="card reports-manager-card">
+                    <div class="card-header">
+                        <i data-lucide="history" class="header-icon"></i>
+                        <h2>Historical Reports Manager</h2>
+                    </div>
+                    <p class="text-muted card-intro">View, download, and audit previously generated scanner reports from your filesystem.</p>
+                    
+                    <div class="reports-list-container">
+                        <div class="reports-header-row">
+                            <span>Filename</span>
+                            <span>Size</span>
+                            <span>Created At</span>
+                            <span style="text-align: right;">Action</span>
+                        </div>
+                        <div id="reports-list" class="reports-list">
+                            <!-- Reports listing -->
+                            <div class="no-reports-msg">
+                                <i data-lucide="folder-open"></i>
+                                <span>No reports generated yet.</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
