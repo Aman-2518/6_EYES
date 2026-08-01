@@ -49,7 +49,7 @@ SERVICE_SIGNATURES = {
 REQUEST = (
     "HEAD / HTTP/1.1\r\n"
     "Host: {host}\r\n"
-    "User-Agent: 6_EYES Scanner\r\n"
+    "User-Agent: 6EYES Scanner\r\n"
     "Accept: */*\r\n"
     "Connection: close\r\n"
     "\r\n"
